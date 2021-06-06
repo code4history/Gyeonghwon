@@ -17,16 +17,16 @@ const parseAGIF = require("./parse_agif");
 const parseWEBP = require("./parse_webp");
 const loadUrl = require('./loader');
 
-const AnimImg = global.AnimImg = {};
+const Gyeonghwon = global.Gyeonghwon = {};
 
-AnimImg.checkNativeFeatures = support.checkNativeFeatures;
-AnimImg.ifNeeded = support.ifNeeded;
+Gyeonghwon.checkNativeFeatures = support.checkNativeFeatures;
+Gyeonghwon.ifNeeded = support.ifNeeded;
 
 /**
  * @param {ArrayBuffer} buffer
  * @return {Promise}
  */
-AnimImg.parseBuffer = function (buffer) {
+Gyeonghwon.parseBuffer = function (buffer) {
   return support.pngCheck(buffer) ? parseAPNG(buffer) :
     support.gifCheck(buffer) ? parseAGIF(buffer) :
       support.webpCheck(buffer) ? parseWEBP(buffer) :
@@ -38,8 +38,8 @@ var url2promise = {};
  * @param {String} url
  * @return {Promise}
  */
-AnimImg.parseURL = function (url) {
-  if (!(url in url2promise)) url2promise[url] = loadUrl(url).then(AnimImg.parseBuffer);
+Gyeonghwon.parseURL = function (url) {
+  if (!(url in url2promise)) url2promise[url] = loadUrl(url).then(Gyeonghwon.parseBuffer);
   return url2promise[url];
 };
 
@@ -48,8 +48,8 @@ AnimImg.parseURL = function (url) {
  * @param {CanvasRenderingContext2D} context
  * @return {Promise}
  */
-AnimImg.animateContext = function (url, context) {
-  return AnimImg.parseURL(url).then(function (a) {
+Gyeonghwon.animateContext = function (url, context) {
+  return Gyeonghwon.parseURL(url).then(function (a) {
     a.addContext(context);
     a.play();
     return a;
@@ -60,9 +60,9 @@ AnimImg.animateContext = function (url, context) {
  * @param {HTMLImageElement} img
  * @return {Promise}
  */
-AnimImg.animateImage = function (img) {
+Gyeonghwon.animateImage = function (img) {
   img.setAttribute("data-is-aimg", "progress");
-  return AnimImg.parseURL(img.src).then(
+  return Gyeonghwon.parseURL(img.src).then(
     function (anim) {
       img.setAttribute("data-is-aimg", "yes");
       var canvas = document.createElement("canvas");
@@ -117,7 +117,7 @@ AnimImg.animateImage = function (img) {
  * @param {HTMLCanvasElement} canvas
  * @return {void}
  */
-AnimImg.releaseCanvas = function(canvas) {
+Gyeonghwon.releaseCanvas = function(canvas) {
   var ctx = canvas.getContext("2d");
   if ('_aimg_animation' in ctx) {
     ctx['_aimg_animation'].removeContext(ctx);
