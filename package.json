@@ -1,29 +1,34 @@
 {
-  "name": "apng-canvas",
-  "version": "2.1.2",
-  "author": "David Mzareulyan",
-  "description": "Library for displaing animated PNG files in browsers with canvas support",
+  "name": "Gyeonghwon",
+  "version": "0.0.1",
+  "author": "Kohei Otsuka",
+  "description": "Library for displaying animated image files in canvas context",
   "keywords": [
     "apng",
+    "gif",
+    "webp",
+    "svg",
     "animation",
-    "animated png",
+    "animated image",
     "canvas"
   ],
-  "homepage": "https://github.com/davidmz/apng-canvas",
+  "homepage": "https://github.com/code4history/Gyeonghwon",
   "license": "MIT",
   "scripts": {
-    "build": "gulp",
-    "build-dev": "gulp devel"
+    "build": "webpack --config webpack_config/webpack.config.product.js",
+    "build:dev": "webpack-cli serve --config webpack_config/webpack.config.devserver.js --mode=development --devtool=inline-source-map"
   },
   "dependencies": {
-    "es6-promise": "~4.2.8",
-    "gulp-append-prepend": "~1.0.8"
+    "es6-promise": "~4.2.8"
   },
   "devDependencies": {
-    "gulp": "~4.0.2",
-    "gulp-append-prepend": "~1.0.8",
-    "gulp-uglify": "~3.0.2",
-    "gulp-concat": "~2.6.1",
-    "gulp-browserify": "~0.5.1"
+    "@babel/core": "^7.14.3",
+    "babel-loader": "^8.2.2",
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
+    "copy-webpack-plugin": "^9.0.0",
+    "html-webpack-plugin": "^5.3.1",
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.0",
+    "webpack-dev-server": "^3.11.2"
   }
 }

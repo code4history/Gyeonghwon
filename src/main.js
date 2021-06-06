@@ -11,29 +11,36 @@
  */
 "use strict";
 
-var support = require("./support-test");
-var parseAPNG = require("./parser");
-var loadUrl = require('./loader');
+const support = require("./support-test");
+const parseAPNG = require("./parse_apng");
+const parseAGIF = require("./parse_agif");
+const parseWEBP = require("./parse_webp");
+const loadUrl = require('./loader');
 
-var APNG = global.APNG = {};
+const AnimImg = global.AnimImg = {};
 
-APNG.checkNativeFeatures = support.checkNativeFeatures;
-APNG.ifNeeded = support.ifNeeded;
+AnimImg.checkNativeFeatures = support.checkNativeFeatures;
+AnimImg.ifNeeded = support.ifNeeded;
 
 /**
  * @param {ArrayBuffer} buffer
  * @return {Promise}
  */
-APNG.parseBuffer = function (buffer) { return parseAPNG(buffer); };
+AnimImg.parseBuffer = function (buffer) {
+  return support.pngCheck(buffer) ? parseAPNG(buffer) :
+    support.gifCheck(buffer) ? parseAGIF(buffer) :
+      support.webpCheck(buffer) ? parseWEBP(buffer) :
+        Promise.reject(new Error('Not a supported file (invalid file signature)'));
+};
 
 var url2promise = {};
 /**
  * @param {String} url
  * @return {Promise}
  */
-APNG.parseURL = function (url) {
-    if (!(url in url2promise)) url2promise[url] = loadUrl(url).then(parseAPNG);
-    return url2promise[url];
+AnimImg.parseURL = function (url) {
+  if (!(url in url2promise)) url2promise[url] = loadUrl(url).then(AnimImg.parseBuffer);
+  return url2promise[url];
 };
 
 /**
@@ -41,77 +48,80 @@ APNG.parseURL = function (url) {
  * @param {CanvasRenderingContext2D} context
  * @return {Promise}
  */
-APNG.animateContext = function (url, context) {
-    return APNG.parseURL(url).then(function (a) {
-        a.addContext(context);
-        a.play();
-        return a;
-    });
+AnimImg.animateContext = function (url, context) {
+  return AnimImg.parseURL(url).then(function (a) {
+    a.addContext(context);
+    a.play();
+    return a;
+  });
 };
 
 /**
  * @param {HTMLImageElement} img
  * @return {Promise}
  */
-APNG.animateImage = function (img) {
-    img.setAttribute("data-is-apng", "progress");
-    return APNG.parseURL(img.src).then(
-        function (anim) {
-            img.setAttribute("data-is-apng", "yes");
-            var canvas = document.createElement("canvas");
-            canvas.width = anim.width;
-            canvas.height = anim.height;
-            Array.prototype.slice.call(img.attributes).forEach(function (attr) {
-                if (["alt", "src", "usemap", "ismap", "data-is-apng", "width", "height"].indexOf(attr.nodeName) == -1) {
-                    canvas.setAttributeNode(attr.cloneNode(false));
-                }
-            });
-            canvas.setAttribute("data-apng-src", img.src);
-            if (img.alt != "") canvas.appendChild(document.createTextNode(img.alt));
+AnimImg.animateImage = function (img) {
+  img.setAttribute("data-is-aimg", "progress");
+  console.log(img);
+  return AnimImg.parseURL(img.src).then(
+    function (anim) {
+      console.log(anim);
+      img.setAttribute("data-is-aimg", "yes");
+      var canvas = document.createElement("canvas");
+      canvas.width = anim.width;
+      canvas.height = anim.height;
+      Array.prototype.slice.call(img.attributes).forEach(function (attr) {
+        if (["alt", "src", "usemap", "ismap", "data-is-aimg", "width", "height"].indexOf(attr.nodeName) == -1) {
+          canvas.setAttributeNode(attr.cloneNode(false));
+        }
+      });
+      canvas.setAttribute("data-aimg-src", img.src);
+      if (img.alt != "") canvas.appendChild(document.createTextNode(img.alt));
 
-            var imgWidth = "", imgHeight = "", val = 0, unit = "";
+      var imgWidth = "", imgHeight = "", val = 0, unit = "";
 
-            if (img.style.width != "" && img.style.width != "auto") {
-                imgWidth = img.style.width;
-            } else if (img.hasAttribute("width")) {
-                imgWidth = img.getAttribute("width") + "px";
-            }
-            if (img.style.height != "" && img.style.height != "auto") {
-                imgHeight = img.style.height;
-            } else if (img.hasAttribute("height")) {
-                imgHeight = img.getAttribute("height") + "px";
-            }
-            if (imgWidth != "" && imgHeight == "") {
-                val = parseFloat(imgWidth);
-                unit = imgWidth.match(/\D+$/)[0];
-                imgHeight = Math.round(canvas.height * val / canvas.width) + unit;
-            }
-            if (imgHeight != "" && imgWidth == "") {
-                val = parseFloat(imgHeight);
-                unit = imgHeight.match(/\D+$/)[0];
-                imgWidth = Math.round(canvas.width * val / canvas.height) + unit;
-            }
-            canvas.style.width = imgWidth;
-            canvas.style.height = imgHeight;
+      if (img.style.width != "" && img.style.width != "auto") {
+        imgWidth = img.style.width;
+      } else if (img.hasAttribute("width")) {
+        imgWidth = img.getAttribute("width") + "px";
+      }
+      if (img.style.height != "" && img.style.height != "auto") {
+        imgHeight = img.style.height;
+      } else if (img.hasAttribute("height")) {
+        imgHeight = img.getAttribute("height") + "px";
+      }
+      if (imgWidth != "" && imgHeight == "") {
+        val = parseFloat(imgWidth);
+        unit = imgWidth.match(/\D+$/)[0];
+        imgHeight = Math.round(canvas.height * val / canvas.width) + unit;
+      }
+      if (imgHeight != "" && imgWidth == "") {
+        val = parseFloat(imgHeight);
+        unit = imgHeight.match(/\D+$/)[0];
+        imgWidth = Math.round(canvas.width * val / canvas.height) + unit;
+      }
+      canvas.style.width = imgWidth;
+      canvas.style.height = imgHeight;
 
-            var p = img.parentNode;
-            p.insertBefore(canvas, img);
-            p.removeChild(img);
-            anim.addContext(canvas.getContext("2d"));
-            anim.play();
-        },
-        function () {
-            img.setAttribute("data-is-apng", "no");
-        });
+      var p = img.parentNode;
+      p.insertBefore(canvas, img);
+      p.removeChild(img);
+      anim.addContext(canvas.getContext("2d"));
+      anim.play();
+    },
+    function (e) {
+      console.log(e);
+      img.setAttribute("data-is-aimg", "no");
+    });
 };
 
 /**
  * @param {HTMLCanvasElement} canvas
  * @return {void}
  */
-APNG.releaseCanvas = function(canvas) {
-    var ctx = canvas.getContext("2d");
-    if ('_apng_animation' in ctx) {
-        ctx['_apng_animation'].removeContext(ctx);
-    }
+AnimImg.releaseCanvas = function(canvas) {
+  var ctx = canvas.getContext("2d");
+  if ('_aimg_animation' in ctx) {
+    ctx['_aimg_animation'].removeContext(ctx);
+  }
 };

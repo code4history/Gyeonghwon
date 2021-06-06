@@ -47,7 +47,7 @@ var Animation = function () {
             ctx.putImageData(dat, 0, 0);
         }
         contexts.push(ctx);
-        ctx['_apng_animation'] = this;
+        ctx['_aimg_animation'] = this;
     };
 
     /**
@@ -64,8 +64,8 @@ var Animation = function () {
         if (contexts.length === 0) {
             this.rewind();
         }
-        if ('_apng_animation' in ctx) {
-            delete ctx['_apng_animation'];
+        if ('_aimg_animation' in ctx) {
+            delete ctx['_aimg_animation'];
         }
     };
 

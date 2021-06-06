@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ja-jp">
+<head>
+  <meta charset="UTF-8">
+  <title>AnimImg</title>
+</head>
+<body>
+<h4>APNG sample</h4>
+<img class="anim-image" src="assets/nezumi.png">
+<h4>AGIF sample</h4>
+<img class="anim-image" src="assets/bg_works1.gif">
+<h4>WEBP sample</h4>
+<img class="anim-image" src="assets/animated-webp-supported.webp">
+</body>
+<script>
+  var images = document.querySelectorAll(".anim-image");
+  for (let i = 0; i < images.length; i++) AnimImg.animateImage(images[i]);
+</script>
+</html>
