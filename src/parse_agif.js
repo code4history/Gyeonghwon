@@ -148,10 +148,12 @@ var parseBlocks = function (bytes, callback) {
       //w(2B),h(2B),GCTF(1B),BCI(1B),PAR(1B) => 7, /w off => 13
       length = 7;
       const bits = byteToBitArr(readByte(bytes, off + 4));
+      const gctExists = bits[0];
       const gctSize = bitsToNum(bits.splice(5, 3));
-      length += Math.pow(2, gctSize + 1) * 3;
+      length += gctExists ? Math.pow(2, gctSize + 1) * 3 : 0;
     } else {
-      switch (readString(bytes, off, 1)) { // For ease of matching
+      const comm = readString(bytes, off, 1);
+      switch (comm) { // For ease of matching
         case '!':
           const sub = readByte(bytes, off + 1);
           switch(readByte(bytes, off + 1)) {
@@ -178,15 +180,16 @@ var parseBlocks = function (bytes, callback) {
           //Sep(1B),l(2B),t(2B),w(2B),h(2B),LCTF(1B) => 10
           length = 10;
           const bits = byteToBitArr(readByte(bytes, off + 9));
-          const gctSize = bitsToNum(bits.splice(5, 3));
-          length += Math.pow(2, gctSize + 1) * 3;
+          const lctExists = bits[0];
+          const lctSize = bitsToNum(bits.splice(5, 3));
+          length += (lctExists ? Math.pow(2, lctSize + 1) * 3 : 0) + 1;
           length += blocksLength(bytes, off + length);
           break;
         case ';':
           type = 'EOF';
           break;
         default:
-          throw new Error('Unknown block');
+          throw new Error(`Unknown block ${comm}`);
       }
     }
     res = callback(type, bytes, off, length);
@@ -250,7 +253,7 @@ var makeDWordArray = function (x) { // gif ready, for little endian
 
 var makeWordArray = function (x) {
   return [x & 0xff, (x >>> 8) & 0xff];
-}
+};
 
 var makeStringArray = function (x) { // gif ready, no customize
   var res = [];

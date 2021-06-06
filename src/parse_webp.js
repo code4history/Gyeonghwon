@@ -17,11 +17,7 @@ module.exports = function (buffer) {
       if (type === "ANIM") {
         isAnimated = true;
         return false;
-      }// else if (type === "ANMF") {
-      //  parseChunks(bytes, function(ltype, bytes, loff , llength) {
-      //    console.log(`ANMF: ${ltype} ${loff} ${llength}`);
-      //  }, off + 8 + 16, length - 8 - 16);
-      //}
+      }
       return true;
     });
     if (!isAnimated) {
@@ -35,84 +31,63 @@ module.exports = function (buffer) {
       frame = null;
 
     parseChunks(bytes, function (type, bytes, off, length) {
-      console.log(type);
       switch (type) {
         case "VP8X":
           headerDataBytes = bytes.subarray(off, off + length);
-          anim.width = read3Bytes(bytes, off + 8 + 4);
-          anim.height = read3Bytes(bytes, off + 8 + 4 + 3);
-          console.log(`anim.width: ${anim.width}`);
-          console.log(`anim.height: ${anim.height}`);
+          anim.width = read3Bytes(bytes, off + 8 + 4) + 1;
+          anim.height = read3Bytes(bytes, off + 8 + 4 + 3) + 1;
           break;
-/*        case "APP":
-          const ident = readString(bytes, off + 3, 11);
-          if (ident === 'NETSCAPE2.0') {
-            anim.numPlays = readWord(bytes, off + 16);
-            console.log(`anim.numPlays: ${anim.numPlays}`);
-          }
+        case "ANIM":
+          anim.numPlays = readWord(bytes, off + 8 + 4);
+          //console.log(`BGColor: ${readDWord(bytes, off + 8)}`);
           break;
-        case "GCE":
+        case "ANMF":
           if (frame) anim.frames.push(frame);
           frame = {};
-          frame.delay = readWord(bytes, off + 4) * 10;
+          frame.delay = read3Bytes(bytes, off + 8 + 12);
           if (frame.delay <= 10) frame.delay = 100;
           anim.playTime += frame.delay;
-          console.log(`frame.delay: ${frame.delay}`);
-          console.log(`anim.playTime: ${anim.playTime}`);
-          frame.gce = subBuffer(bytes, off, length);
+          frame.width = read3Bytes(bytes, off + 8 + 6) + 1;
+          frame.height = read3Bytes(bytes, off + 8 + 9) + 1;
+          frame.left = read3Bytes(bytes, off + 8) * 2;
+          frame.top = read3Bytes(bytes, off + 8 + 3) * 2;
+          const bits = byteToBitArr(readByte(bytes, off + 8 + 15));
+          frame.disposeOp = bits[7] ? 1 : 0;
+          frame.blendOp = bits[6] ? 0 : 1;
+          frame.data = subBuffer(bytes, off + 8 + 16, length - 8 - 16);
           break;
-        case "IMG":
-          if (frame && frame.data) {
-            anim.frames.push(frame);
-            frame = {};
-          }
-          frame.width = readWord(bytes, off + 5);
-          frame.height = readWord(bytes, off + 7);
-          frame.left = readWord(bytes, off + 1);
-          frame.top = readWord(bytes, off + 3);
-          console.log(`frame.width: ${frame.width}`);
-          console.log(`frame.height: ${frame.height}`);
-          console.log(`frame.left: ${frame.left}`);
-          console.log(`frame.top: ${frame.top}`);
-          frame.data = subBuffer(bytes, off, length);
-          frame.disposeOp = 0;
-          frame.blendOp = 0;
-          break;
-        case "COM":
-          break;
-        case "PTE":
-          break;
-        case "EOF":
-          postDataParts.push(subBuffer(bytes, off, length));
-          break;*/
         default:
       }
     });
-
     if (frame) anim.frames.push(frame);
 
     if (anim.frames.length === 0) {
-      reject("Not an animated PNG");
+      reject("Not an animated WebP");
       return;
     }
 
     // creating images
     let createdImages = 0;
-    const postBlob = new Blob(postDataParts);
     for (var f = 0; f < anim.frames.length; f++) {
       frame = anim.frames[f];
 
       var bb = [];
-      bb.push(support.GIF89_SIGNATURE_BYTES);
-      headerDataBytes.set(makeWordArray(frame.width), 0);
-      headerDataBytes.set(makeWordArray(frame.height), 2);
+      const length = makeDWordArray(4 + headerDataBytes.byteLength + frame.data.byteLength);
+      const headerArray = support.WEBP_CHECK_BYTES.map((bite, i) => {
+        return i > 3 && i < 8 ? length[i - 4] : support.WEBP_CHECK_BYTES[i];
+      });
+      bb.push(headerArray);
+      const bits = byteToBitArr(readByte(headerDataBytes, 8));
+      bits[4] = false; // EXIF metadata (E): 1 bit
+      bits[5] = false; // XMP metadata (X): 1 bit
+      bits[6] = false; // Animation (A): 1 bit
+      headerDataBytes.set([bitsToNum(bits)], 8);
+      headerDataBytes.set(make3BytesArray(frame.width - 1), 8 + 4);
+      headerDataBytes.set(make3BytesArray(frame.height - 1), 8 + 4 + 3);
       bb.push(headerDataBytes);
-      bb.push(frame.gce);
       bb.push(frame.data);
-      bb.push(postBlob);
-      var url = URL.createObjectURL(new Blob(bb, {"type": "image/gif"}));
+      var url = URL.createObjectURL(new Blob(bb, {"type": "image/webp"}));
       delete frame.data;
-      delete frame.gce;
       bb = null;
 
       /**
@@ -146,10 +121,10 @@ var parseChunks = function (bytes, callback, off, limit) {
   let res, length, type;
   do {
     const type = readString(bytes, off, 4);
-    const length = readDWord(bytes, off + 4);
+    let length = readDWord(bytes, off + 4);
+    if (length % 2) length++;
     res = callback(type, bytes, off, length + 8);
     off += length + 8;
-    if (length % 2) off++;
   } while (res !== false && off < limitOff);
 };
 
@@ -222,7 +197,11 @@ var makeDWordArray = function (x) { // gif ready, for little endian
 
 var makeWordArray = function (x) {
   return [x & 0xff, (x >>> 8) & 0xff];
-}
+};
+
+var make3BytesArray = function (x) { // gif ready, for little endian
+  return [x & 0xff, (x >>> 8) & 0xff, (x >>> 16) & 0xff];
+};
 
 var makeStringArray = function (x) { // gif ready, no customize
   var res = [];

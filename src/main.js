@@ -62,40 +62,38 @@ AnimImg.animateContext = function (url, context) {
  */
 AnimImg.animateImage = function (img) {
   img.setAttribute("data-is-aimg", "progress");
-  console.log(img);
   return AnimImg.parseURL(img.src).then(
     function (anim) {
-      console.log(anim);
       img.setAttribute("data-is-aimg", "yes");
       var canvas = document.createElement("canvas");
       canvas.width = anim.width;
       canvas.height = anim.height;
       Array.prototype.slice.call(img.attributes).forEach(function (attr) {
-        if (["alt", "src", "usemap", "ismap", "data-is-aimg", "width", "height"].indexOf(attr.nodeName) == -1) {
+        if (["alt", "src", "usemap", "ismap", "data-is-aimg", "width", "height"].indexOf(attr.nodeName) === -1) {
           canvas.setAttributeNode(attr.cloneNode(false));
         }
       });
       canvas.setAttribute("data-aimg-src", img.src);
-      if (img.alt != "") canvas.appendChild(document.createTextNode(img.alt));
+      if (img.alt !== "") canvas.appendChild(document.createTextNode(img.alt));
 
       var imgWidth = "", imgHeight = "", val = 0, unit = "";
 
-      if (img.style.width != "" && img.style.width != "auto") {
+      if (img.style.width !== "" && img.style.width !== "auto") {
         imgWidth = img.style.width;
       } else if (img.hasAttribute("width")) {
         imgWidth = img.getAttribute("width") + "px";
       }
-      if (img.style.height != "" && img.style.height != "auto") {
+      if (img.style.height !== "" && img.style.height !== "auto") {
         imgHeight = img.style.height;
       } else if (img.hasAttribute("height")) {
         imgHeight = img.getAttribute("height") + "px";
       }
-      if (imgWidth != "" && imgHeight == "") {
+      if (imgWidth !== "" && imgHeight === "") {
         val = parseFloat(imgWidth);
         unit = imgWidth.match(/\D+$/)[0];
         imgHeight = Math.round(canvas.height * val / canvas.width) + unit;
       }
-      if (imgHeight != "" && imgWidth == "") {
+      if (imgHeight !== "" && imgWidth === "") {
         val = parseFloat(imgHeight);
         unit = imgHeight.match(/\D+$/)[0];
         imgWidth = Math.round(canvas.width * val / canvas.height) + unit;

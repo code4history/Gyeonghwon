@@ -111,7 +111,7 @@ module.exports = function (buffer) {
       frame.img.onload = function () {
         URL.revokeObjectURL(this.src);
         createdImages++;
-        if (createdImages == anim.frames.length) {
+        if (createdImages === anim.frames.length) {
           resolve(anim);
         }
       };
