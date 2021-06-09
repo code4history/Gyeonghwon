@@ -7,11 +7,9 @@ const common = require("./webpack.config.common.js");
 
 module.exports = merge(common, {
   output: {
-    path: path.resolve(__dirname, "../es5"),
+    path: path.resolve(__dirname, "../lib"),
     filename: '[name].js',
-    library: 'Tin',
     libraryTarget: 'umd',
-    libraryExport: 'default',
-    globalObject: 'this',
+    globalObject: 'this'
   },
 });

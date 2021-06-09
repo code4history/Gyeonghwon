@@ -6,4 +6,4 @@
  * @version   v4.2.8+1e68dce6
  */
 
-/*! apng-canvas v2.1.2 | David Mzareulyan | license: MIT */
+/*! Gyeonghwon v0.0.1 | Kohei Otsuka | license: MIT */

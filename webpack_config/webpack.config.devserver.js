@@ -24,5 +24,4 @@ module.exports = merge(common, {
       scriptLoading: "blocking"
     })
   ],
-
 });
