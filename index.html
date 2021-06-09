@@ -1,89 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja-jp">
 <head>
-    <meta charset="UTF-8">
-    <title>APNG test</title>
-    <link href="style.css" rel="stylesheet">
-
-    <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
-    <script src="https://cdn.rawgit.com/davidmz/apng-canvas/v2.0.0/build/apng-canvas.min.js"></script>
-    <script>
-        $(function () {
-            APNG.ifNeeded()
-                    .then(function () {
-                        $("#one").find("img").each(function () { APNG.animateImage(this); });
-                    })
-                    .catch(function () {
-                        $("#message").show().text("apng-canvas not needed");
-                    });
-
-            $("#show-more").click(function () {
-                $("#one").hide();
-                $("#two").show();
-                APNG.ifNeeded()
-                        .then(function () {
-                            $("#two").find("img").each(function () { APNG.animateImage(this); });
-                        });
-                return false;
-            });
-        });
-    </script>
-
+  <meta charset="UTF-8">
+  <title>Gyeonghwon</title>
 </head>
 <body>
-<h1>apng-canvas test page</h1>
-
-<p>
-    <a href="https://github.com/davidmz/apng-canvas">Project on GitHub</a>
-</p>
-
-<p id="message"></p>
-
-<div id="one">
-    <p>
-        <img src="images/clock.png" width="150" height="150" style="cursor: pointer">
-        <img src="images/clock.png" width="150" height="150">
-        <img src="images/clock.png" width="150" height="150">
-        <img src="images/clock.png" width="150" height="150" style="cursor: pointer"
-             onclick="alert('Click on image #4!')">
-    </p>
-
-    <p>
-        <a href="#" id="show-more">Show more images</a>
-    </p>
-</div>
-<div id="two" style="display: none;">
-    <p>
-        APNG images
-    </p>
-
-    <p>
-        <img src="images/clock.png" width="150" height="150">
-        <img src="images/APNG-Icos4D.png" width="128" height="128">
-        <img src="images/pyani.png" width="200" height="125">
-        <img src="images/APNG-cube.png" width="192" height="192">
-    </p>
-
-    <p>
-        Plain old PNG
-    </p>
-
-    <p>
-        <img src="images/Firefox_3.5_logo.png" width="110" height="110">
-    </p>
-
-    <p>
-        GIF image
-    </p>
-
-    <p>
-        <img src="images/sound-ico.gif" width="32" height="32">
-    </p>
-</div>
-<hr>
-<p style="font-size: smaller;">
-    © 2011, 2015 <a href="https://github.com/davidmz">David Mzareulyan</a><br>
-    All APNG images are from <a href="http://animatedpng.com/" target="_blank">animatedpng.com</a>
-</p>
-</body>
+<h4>APNG sample</h4>
+<img class="anim-image" src="assets/comipo24bit.png"> <img class="anim-image" src="assets/nezumi.png">
+<h4>AGIF sample</h4>
+<img class="anim-image" src="assets/comipo.gif"> <img class="anim-image" src="assets/bg_works1.gif">
+<h4>WEBP sample</h4>
+<img class="anim-image" src="assets/comipo.webp"> <img class="anim-image" src="assets/animated-webp-supported.webp">
+<script src="index.js"></script></body>
+<script>
+  var images = document.querySelectorAll(".anim-image");
+  for (let i = 0; i < images.length; i++) Gyeonghwon.animateImage(images[i]);
+</script>
 </html>
