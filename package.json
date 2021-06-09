@@ -16,7 +16,8 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack --config webpack_config/webpack.config.product.js",
-    "build:dev": "webpack-cli serve --config webpack_config/webpack.config.devserver.js --mode=development --devtool=inline-source-map"
+    "build:dev": "webpack-cli --config webpack_config/webpack.config.devserver.js --mode=development --devtool=inline-source-map",
+    "server": "webpack-cli serve --config webpack_config/webpack.config.devserver.js --mode=development --devtool=inline-source-map"
   },
   "dependencies": {
     "es6-promise": "~4.2.8"
