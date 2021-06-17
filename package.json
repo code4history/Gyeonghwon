@@ -17,17 +17,23 @@
   "scripts": {
     "build": "webpack --config webpack_config/webpack.config.product.js",
     "build:dev": "webpack-cli --config webpack_config/webpack.config.devserver.js --mode=development --devtool=inline-source-map",
+    "build:es6": "tsc",
     "server": "webpack-cli serve --config webpack_config/webpack.config.devserver.js --mode=development --devtool=inline-source-map"
   },
   "dependencies": {
     "es6-promise": "~4.2.8"
   },
   "devDependencies": {
+    "@babel/cli": "^7.14.5",
     "@babel/core": "^7.14.3",
+    "@babel/preset-env": "^7.14.5",
+    "@babel/preset-typescript": "^7.14.5",
     "babel-loader": "^8.2.2",
     "clean-webpack-plugin": "^4.0.0-alpha.0",
     "copy-webpack-plugin": "^9.0.0",
+    "core-js": "^3.14.0",
     "html-webpack-plugin": "^5.3.1",
+    "typescript": "^4.3.2",
     "webpack": "^5.38.1",
     "webpack-cli": "^4.7.0",
     "webpack-dev-server": "^3.11.2"

@@ -1,14 +1,14 @@
 "use strict";
 
-const Animation = require('./animation');
-const crc32 = require('./crc32');
-const support = require("./support-test");
+import Animation, {Frame} from './animation';
+import { support } from './support-test';
+import crc32 from './crc32';
 
 /**
  * @param {ArrayBuffer} buffer
  * @return {Promise}
  */
-module.exports = function (buffer) {
+export default function (buffer) {
   const bytes = new Uint8Array(buffer);
   return new Promise(function (resolve, reject) {
     // fast animation test

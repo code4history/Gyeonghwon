@@ -1,25 +1,23 @@
 "use strict";
 
-var Promise = Promise || require('es6-promise').Promise;
-
 // "\x89PNG\x0d\x0a\x1a\x0a"
-const PNG_SIGNATURE_BYTES = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
-const GIF87_SIGNATURE_BYTES = new Uint8Array([0x47, 0x49, 0x46, 0x38, 0x37, 0x61]);
-const GIF89_SIGNATURE_BYTES = new Uint8Array([0x47, 0x49, 0x46, 0x38, 0x39, 0x61]);
-const WEBP_CHECK_BYTES = new Uint8Array([0x52, 0x49, 0x46, 0x46, 0x00, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50]);
+export const PNG_SIGNATURE_BYTES = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+export const GIF87_SIGNATURE_BYTES = new Uint8Array([0x47, 0x49, 0x46, 0x38, 0x37, 0x61]);
+export const GIF89_SIGNATURE_BYTES = new Uint8Array([0x47, 0x49, 0x46, 0x38, 0x39, 0x61]);
+export const WEBP_CHECK_BYTES = new Uint8Array([0x52, 0x49, 0x46, 0x46, 0x00, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50]);
 
-var oncePromise = function (foo) {
-  var promise = null;
-  return function (callback) {
+const oncePromise = function (foo: any) {
+  let promise: Promise<any>;
+  return function (callback?: (value: any) => any) {
     if (!promise) promise = new Promise(foo);
     if (callback) promise.then(callback);
     return promise;
   };
 };
 
-var checkNativeFeatures = oncePromise(function (resolve) {
-  var canvas = document.createElement("canvas");
-  var result = {
+export const checkNativeFeatures = oncePromise(function (resolve: (value: any) => any) {
+  const canvas = document.createElement("canvas");
+  const result = {
     TypedArrays: ("ArrayBuffer" in global),
     BlobURLs: ("URL" in global),
     requestAnimationFrame: ("requestAnimationFrame" in global),
@@ -30,11 +28,11 @@ var checkNativeFeatures = oncePromise(function (resolve) {
 
   if (result.canvas) {
     // see http://eligrey.com/blog/post/apng-feature-detection
-    var img = new Image();
+    const img = new Image();
     img.onload = function () {
-      var ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0);
-      result.APNG = (ctx.getImageData(0, 0, 1, 1).data[3] === 0);
+      const ctx = canvas.getContext("2d");
+      ctx!.drawImage(img, 0, 0);
+      result.APNG = (ctx!.getImageData(0, 0, 1, 1).data[3] === 0);
       resolve(result);
     };
     // frame 1 (skipped on apng-supporting browsers): [0, 0, 0, 255]
@@ -51,21 +49,20 @@ var checkNativeFeatures = oncePromise(function (resolve) {
  * @param {boolean} [ignoreNativeAPNG]
  * @return {Promise}
  */
-var ifNeeded = function (ignoreNativeAPNG) {
-  if (typeof ignoreNativeAPNG == 'undefined') ignoreNativeAPNG = false;
+export const ifNeeded = function (ignoreNativeAPNG = false) {
   return checkNativeFeatures().then(function (features) {
     if (features.APNG && !ignoreNativeAPNG) {
-      reject();
+      //reject();
     } else {
-      var ok = true;
-      for (var k in features) if (features.hasOwnProperty(k) && k != 'APNG') {
+      let ok = true;
+      for (let k in features) if (features.hasOwnProperty(k) && k != 'APNG') {
         ok = ok && features[k];
       }
     }
   });
 };
 
-function pngCheck(buffer) {
+export function pngCheck(buffer: ArrayBufferLike) {
   const bytes = new Uint8Array(buffer);
   for (let i = 0; i < PNG_SIGNATURE_BYTES.length; i++) {
     if (PNG_SIGNATURE_BYTES[i] !== bytes[i]) {
@@ -75,7 +72,7 @@ function pngCheck(buffer) {
   return true;
 }
 
-function gifCheck(buffer) {
+export function gifCheck(buffer: ArrayBufferLike) {
   const bytes = new Uint8Array(buffer);
   for (let i = 0; i < GIF87_SIGNATURE_BYTES.length; i++) {
     if (GIF87_SIGNATURE_BYTES[i] !== bytes[i] && GIF89_SIGNATURE_BYTES[i] !== bytes[i]) {
@@ -85,7 +82,7 @@ function gifCheck(buffer) {
   return true;
 }
 
-function webpCheck(buffer) {
+export function webpCheck(buffer: ArrayBufferLike) {
   const bytes = new Uint8Array(buffer);
   for (let i = 0; i < WEBP_CHECK_BYTES.length; i++) {
     if (WEBP_CHECK_BYTES[i] !== bytes[i] && WEBP_CHECK_BYTES[i] !== 0x00) {
@@ -95,7 +92,7 @@ function webpCheck(buffer) {
   return true;
 }
 
-module.exports = {
+export const support = {
   checkNativeFeatures,
   ifNeeded,
   pngCheck,

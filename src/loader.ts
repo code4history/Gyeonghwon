@@ -1,8 +1,6 @@
 "use strict";
 
-var Promise = Promise || require('es6-promise').Promise;
-
-module.exports = function (url) {
+export default function (url: string) {
   return new Promise(function (resolve, reject) {
     fetch(url, {
       method: 'GET'

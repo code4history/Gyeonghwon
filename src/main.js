@@ -11,11 +11,11 @@
  */
 "use strict";
 
-const support = require("./support-test");
-const parseAPNG = require("./parse_apng");
-const parseAGIF = require("./parse_agif");
-const parseWEBP = require("./parse_webp");
-const loadUrl = require('./loader');
+import { support } from './support-test';
+import parseAPNG from './parse_apng';
+import parseAGIF from './parse_agif';
+import parseWEBP from './parse_webp';
+import loadUrl from './loader';
 
 const Gyeonghwon = global.Gyeonghwon = {};
 
