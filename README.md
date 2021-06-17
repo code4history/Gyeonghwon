@@ -1,4 +1,4 @@
-Gyeonghwon v0.0.1
+Gyeonghwon (甄萱:Animated image marker enabler for canvas-based map APIs)
 ==============
 
 Library to display Animated images in a context in canvas.
