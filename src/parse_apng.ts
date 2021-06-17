@@ -18,12 +18,12 @@ import {
  * @param {ArrayBuffer} buffer
  * @return {Promise}
  */
-export default function (buffer) {
+export default function (buffer: ArrayBufferLike) {
   const bytes = new Uint8Array(buffer);
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     // fast animation test
     let isAnimated = false;
-    parseChunks(bytes, function (type) {
+    parseChunks(bytes, (type, _bytes, _off, _length) =>  {
       if (type === "acTL") {
         isAnimated = true;
         return false;
@@ -35,13 +35,8 @@ export default function (buffer) {
       return;
     }
 
-    const
-      preDataParts = [],
-      postDataParts = [],
-      anim = new Animation();
-    let
-      headerDataBytes = null,
-      frame = null;
+    const preDataParts:Uint8Array[] = [], postDataParts:Uint8Array[] = [], anim = new Animation();
+    let headerDataBytes:Uint8Array | undefined, frame: Partial<Frame> | undefined;
 
     parseChunks(bytes, function (type, bytes, off, length) {
       switch (type) {
@@ -54,14 +49,14 @@ export default function (buffer) {
           anim.numPlays = readDWord(bytes, off + 8 + 4, true);
           break;
         case "fcTL":
-          if (frame) anim.frames.push(frame);
+          if (frame) anim.frames.push(frame as Frame);
           frame = {};
           frame.width = readDWord(bytes, off + 8 + 4, true);
           frame.height = readDWord(bytes, off + 8 + 8, true);
           frame.left = readDWord(bytes, off + 8 + 12, true);
           frame.top = readDWord(bytes, off + 8 + 16, true);
-          var delayN = readWord(bytes, off + 8 + 20, true);
-          var delayD = readWord(bytes, off + 8 + 22, true);
+          const delayN = readWord(bytes, off + 8 + 20, true);
+          let delayD = readWord(bytes, off + 8 + 22, true);
           if (delayD == 0) delayD = 100;
           frame.delay = 1000 * delayN / delayD;
           // see http://mxr.mozilla.org/mozilla/source/gfx/src/shared/gfxImageFrame.cpp#343
@@ -72,10 +67,10 @@ export default function (buffer) {
           frame.dataParts = [];
           break;
         case "fdAT":
-          if (frame) frame.dataParts.push(bytes.subarray(off + 8 + 4, off + 8 + length));
+          if (frame) frame.dataParts!.push(bytes.subarray(off + 8 + 4, off + 8 + length));
           break;
         case "IDAT":
-          if (frame) frame.dataParts.push(bytes.subarray(off + 8, off + 8 + length));
+          if (frame) frame.dataParts!.push(bytes.subarray(off + 8, off + 8 + length));
           break;
         case "IEND":
           postDataParts.push(subBuffer(bytes, off, 12 + length));
@@ -86,7 +81,7 @@ export default function (buffer) {
       return true;
     });
 
-    if (frame) anim.frames.push(frame);
+    if (frame) anim.frames.push(frame as Frame);
 
     if (anim.frames.length == 0) {
       reject("Not an animated PNG");
@@ -94,24 +89,24 @@ export default function (buffer) {
     }
 
     // creating images
-    var createdImages = 0;
-    var preBlob = new Blob(preDataParts), postBlob = new Blob(postDataParts);
-    for (var f = 0; f < anim.frames.length; f++) {
+    let createdImages = 0;
+    const preBlob = new Blob(preDataParts), postBlob = new Blob(postDataParts);
+    for (let f = 0; f < anim.frames.length; f++) {
       frame = anim.frames[f];
 
-      var bb = [];
+      let bb: BlobPart[] = [];
       bb.push(support.PNG_SIGNATURE_BYTES);
-      headerDataBytes.set(makeDWordArray(frame.width, true), 0);
-      headerDataBytes.set(makeDWordArray(frame.height, true), 4);
-      bb.push(makeChunkBytes("IHDR", headerDataBytes));
+      headerDataBytes!.set(makeDWordArray(frame.width!, true), 0);
+      headerDataBytes!.set(makeDWordArray(frame.height!, true), 4);
+      bb.push(makeChunkBytes("IHDR", headerDataBytes!));
       bb.push(preBlob);
-      for (var j = 0; j < frame.dataParts.length; j++) {
-        bb.push(makeChunkBytes("IDAT", frame.dataParts[j]));
+      for (let j = 0; j < frame.dataParts!.length; j++) {
+        bb.push(makeChunkBytes("IDAT", frame.dataParts![j]));
       }
       bb.push(postBlob);
-      var url = URL.createObjectURL(new Blob(bb, {"type": "image/png"}));
+      const url = URL.createObjectURL(new Blob(bb, {"type": "image/png"}));
       delete frame.dataParts;
-      bb = null;
+      bb = [];
 
       /**
        * Using "createElement" instead of "new Image" because of bug in Chrome 27
@@ -163,5 +158,5 @@ function makeChunkBytes(type: string, dataBytes: Uint8Array): Uint8Array {
   const crc = crc32(bytes, 4, crcLen);
   bytes.set(makeDWordArray(crc, true), crcLen + 4);
   return bytes;
-};
+}
 

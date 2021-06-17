@@ -161,7 +161,6 @@ function parseBlocks(bytes: Uint8Array, callback: ParseCallback) {
       const comm = readString(bytes, off, 1);
       switch (comm) { // For ease of matching
         case '!':
-          const sub = readByte(bytes, off + 1);
           switch(readByte(bytes, off + 1)) {
             case 0xf9:
               type = 'GCE';
