@@ -1,39 +1,46 @@
 export type ParseCallback = (type: string, bytes: Uint8Array, off: number, length:number) => boolean;
 
+function endianIndex(i: number, byteNum: number, isBig = false): number {
+  return isBig ? i : byteNum - 1 - i;
+}
+
 /**
  * @param {Uint8Array} bytes
  * @param {int} off
+ * @param {boolean} isBig
  * @return {int}
  */
-export function readDWord(bytes: Uint8Array, off: number) { // gif ready, for little endian
+export function readDWord(bytes: Uint8Array, off: number, isBig = false) {
   let x = 0;
   // Force the most-significant byte to unsigned.
-  x += ((bytes[off + 3] << 24 ) >>> 0);
-  for (let i = 1; i < 4; i++) x += ( (bytes[off + 3 - i] << ((3 - i) * 8)) );
+  x += ((bytes[off + endianIndex(0, 4, isBig)] << 24 ) >>> 0);
+  for (let i = 1; i < 4; i++) x += ( (bytes[off + endianIndex(i, 4, isBig)] << ((3 - i) * 8)) );
   return x;
 }
 
 /**
  * @param {Uint8Array} bytes
  * @param {int} off
+ * @param {boolean} isBig
  * @return {int}
  */
-export function readWord(bytes: Uint8Array, off: number) { // gif ready, for little endian
+export function readWord(bytes: Uint8Array, off: number, isBig = false) {
   let x = 0;
-  for (let i = 0; i < 2; i++) x += (bytes[off + 1 - i] << ((1 - i) * 8));
+  for (let i = 0; i < 2; i++) x += (bytes[off + endianIndex(i, 2, isBig)] << ((1 - i) * 8));
   return x;
 }
 
 /**
  * @param {Uint8Array} bytes
  * @param {int} off
+ * @param {boolean} isBig
  * @return {int}
  */
-export function read3Bytes(bytes: Uint8Array, off: number) { // gif ready, for little endian
+export function read3Bytes(bytes: Uint8Array, off: number, isBig = false) {
   let x = 0;
   // Force the most-significant byte to unsigned.
-  x += ((bytes[off + 2] << 16 ) >>> 0);
-  for (let i = 1; i < 3; i++) x += ( (bytes[off + 2 - i] << ((2 - i) * 8)) );
+  x += ((bytes[off + endianIndex(0, 3, isBig)] << 16 ) >>> 0);
+  for (let i = 1; i < 3; i++) x += ( (bytes[off + endianIndex(i, 3, isBig)] << ((2 - i) * 8)) );
   return x;
 }
 
@@ -63,16 +70,19 @@ export function readString(bytes: Uint8Array, off: number, length: number) { // 
   return String.fromCharCode.apply(String, chars);
 }
 
-export function makeDWordArray(x: number) { // gif ready, for little endian
-  return [x & 0xff, (x >>> 8) & 0xff, (x >>> 16) & 0xff, (x >>> 24) & 0xff];
+export function makeDWordArray(x: number, isBig = false) { // gif ready, for little endian
+  const arr = [x & 0xff, (x >>> 8) & 0xff, (x >>> 16) & 0xff, (x >>> 24) & 0xff];
+  return isBig ? arr.reverse() : arr;
 }
 
-export function makeWordArray(x: number) {
-  return [x & 0xff, (x >>> 8) & 0xff];
+export function makeWordArray(x: number, isBig = false) {
+  const arr = [x & 0xff, (x >>> 8) & 0xff];
+  return isBig ? arr.reverse() : arr;
 }
 
-export function make3BytesArray(x: number) { // gif ready, for little endian
-  return [x & 0xff, (x >>> 8) & 0xff, (x >>> 16) & 0xff];
+export function make3BytesArray(x: number, isBig = false) { // gif ready, for little endian
+  const arr = [x & 0xff, (x >>> 8) & 0xff, (x >>> 16) & 0xff];
+  return isBig ? arr.reverse() : arr;
 }
 
 export function makeStringArray(x: string) { // gif ready, no customize

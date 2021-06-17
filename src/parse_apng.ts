@@ -3,6 +3,7 @@
 import Animation, {Frame} from './animation';
 import { support } from './support-test';
 import crc32 from './crc32';
+import {makeDWordArray, makeStringArray, readByte, readDWord, readString, readWord, subBuffer} from './parse_base';
 
 /**
  * @param {ArrayBuffer} buffer
@@ -37,21 +38,21 @@ export default function (buffer) {
       switch (type) {
         case "IHDR":
           headerDataBytes = bytes.subarray(off + 8, off + 8 + length);
-          anim.width = readDWord(bytes, off + 8);
-          anim.height = readDWord(bytes, off + 12);
+          anim.width = readDWord(bytes, off + 8, true);
+          anim.height = readDWord(bytes, off + 12, true);
           break;
         case "acTL":
-          anim.numPlays = readDWord(bytes, off + 8 + 4);
+          anim.numPlays = readDWord(bytes, off + 8 + 4, true);
           break;
         case "fcTL":
           if (frame) anim.frames.push(frame);
           frame = {};
-          frame.width = readDWord(bytes, off + 8 + 4);
-          frame.height = readDWord(bytes, off + 8 + 8);
-          frame.left = readDWord(bytes, off + 8 + 12);
-          frame.top = readDWord(bytes, off + 8 + 16);
-          var delayN = readWord(bytes, off + 8 + 20);
-          var delayD = readWord(bytes, off + 8 + 22);
+          frame.width = readDWord(bytes, off + 8 + 4, true);
+          frame.height = readDWord(bytes, off + 8 + 8, true);
+          frame.left = readDWord(bytes, off + 8 + 12, true);
+          frame.top = readDWord(bytes, off + 8 + 16, true);
+          var delayN = readWord(bytes, off + 8 + 20, true);
+          var delayD = readWord(bytes, off + 8 + 22, true);
           if (delayD == 0) delayD = 100;
           frame.delay = 1000 * delayN / delayD;
           // see http://mxr.mozilla.org/mozilla/source/gfx/src/shared/gfxImageFrame.cpp#343
@@ -90,8 +91,8 @@ export default function (buffer) {
 
       var bb = [];
       bb.push(support.PNG_SIGNATURE_BYTES);
-      headerDataBytes.set(makeDWordArray(frame.width), 0);
-      headerDataBytes.set(makeDWordArray(frame.height), 4);
+      headerDataBytes.set(makeDWordArray(frame.width, true), 0);
+      headerDataBytes.set(makeDWordArray(frame.height, true), 4);
       bb.push(makeChunkBytes("IHDR", headerDataBytes));
       bb.push(preBlob);
       for (var j = 0; j < frame.dataParts.length; j++) {
@@ -130,71 +131,13 @@ export default function (buffer) {
 var parseChunks = function (bytes, callback) {
   var off = 8;
   do {
-    var length = readDWord(bytes, off);
+    var length = readDWord(bytes, off, true);
     var type = readString(bytes, off + 4, 4);
     var res = callback(type, bytes, off, length);
     off += 12 + length;
   } while (res !== false && type != "IEND" && off < bytes.length);
 };
 
-/**
- * @param {Uint8Array} bytes
- * @param {int} off
- * @return {int}
- */
-var readDWord = function (bytes, off) {
-  var x = 0;
-  // Force the most-significant byte to unsigned.
-  x += ((bytes[0 + off] << 24 ) >>> 0);
-  for (var i = 1; i < 4; i++) x += ( (bytes[i + off] << ((3 - i) * 8)) );
-  return x;
-};
-
-/**
- * @param {Uint8Array} bytes
- * @param {int} off
- * @return {int}
- */
-var readWord = function (bytes, off) {
-  var x = 0;
-  for (var i = 0; i < 2; i++) x += (bytes[i + off] << ((1 - i) * 8));
-  return x;
-};
-
-/**
- * @param {Uint8Array} bytes
- * @param {int} off
- * @return {int}
- */
-var readByte = function (bytes, off) {
-  return bytes[off];
-};
-
-/**
- * @param {Uint8Array} bytes
- * @param {int} start
- * @param {int} length
- * @return {Uint8Array}
- */
-var subBuffer = function (bytes, start, length) {
-  var a = new Uint8Array(length);
-  a.set(bytes.subarray(start, start + length));
-  return a;
-};
-
-var readString = function (bytes, off, length) {
-  var chars = Array.prototype.slice.call(bytes.subarray(off, off + length));
-  return String.fromCharCode.apply(String, chars);
-};
-
-var makeDWordArray = function (x) {
-  return [(x >>> 24) & 0xff, (x >>> 16) & 0xff, (x >>> 8) & 0xff, x & 0xff];
-};
-var makeStringArray = function (x) {
-  var res = [];
-  for (var i = 0; i < x.length; i++) res.push(x.charCodeAt(i));
-  return res;
-};
 /**
  * @param {string} type
  * @param {Uint8Array} dataBytes
@@ -203,11 +146,11 @@ var makeStringArray = function (x) {
 var makeChunkBytes = function (type, dataBytes) {
   var crcLen = type.length + dataBytes.length;
   var bytes = new Uint8Array(new ArrayBuffer(crcLen + 8));
-  bytes.set(makeDWordArray(dataBytes.length), 0);
+  bytes.set(makeDWordArray(dataBytes.length,true), 0);
   bytes.set(makeStringArray(type), 4);
   bytes.set(dataBytes, 8);
   var crc = crc32(bytes, 4, crcLen);
-  bytes.set(makeDWordArray(crc), crcLen + 4);
+  bytes.set(makeDWordArray(crc, true), crcLen + 4);
   return bytes;
 };
 
