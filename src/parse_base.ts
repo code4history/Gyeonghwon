@@ -65,7 +65,7 @@ export function subBuffer(bytes: Uint8Array, start: number, length: number) { //
   return a;
 }
 
-export function readString(bytes: Uint8Array, off: number, length: number) { // gif ready, no customize
+export function readString(bytes: Uint8Array, off: number, length: number): string { // gif ready, no customize
   const chars = Array.prototype.slice.call(bytes.subarray(off, off + length));
   return String.fromCharCode.apply(String, chars);
 }

@@ -3,7 +3,16 @@
 import Animation, {Frame} from './animation';
 import { support } from './support-test';
 import crc32 from './crc32';
-import {makeDWordArray, makeStringArray, readByte, readDWord, readString, readWord, subBuffer} from './parse_base';
+import {
+  makeDWordArray,
+  makeStringArray,
+  ParseCallback,
+  readByte,
+  readDWord,
+  readString,
+  readWord,
+  subBuffer
+} from './parse_base';
 
 /**
  * @param {ArrayBuffer} buffer
@@ -74,6 +83,7 @@ export default function (buffer) {
         default:
           preDataParts.push(subBuffer(bytes, off, 12 + length));
       }
+      return true;
     });
 
     if (frame) anim.frames.push(frame);
@@ -128,28 +138,29 @@ export default function (buffer) {
  * @param {Uint8Array} bytes
  * @param {function(string, Uint8Array, int, int)} callback
  */
-var parseChunks = function (bytes, callback) {
-  var off = 8;
+function parseChunks(bytes: Uint8Array, callback: ParseCallback) {
+  let off = 8;
+  let type: string, res = true;
   do {
-    var length = readDWord(bytes, off, true);
-    var type = readString(bytes, off + 4, 4);
-    var res = callback(type, bytes, off, length);
+    const length = readDWord(bytes, off, true);
+    type = readString(bytes, off + 4, 4);
+    res = callback(type, bytes, off, length);
     off += 12 + length;
-  } while (res !== false && type != "IEND" && off < bytes.length);
-};
+  } while (res && type != "IEND" && off < bytes.length);
+}
 
 /**
  * @param {string} type
  * @param {Uint8Array} dataBytes
  * @return {Uint8Array}
  */
-var makeChunkBytes = function (type, dataBytes) {
-  var crcLen = type.length + dataBytes.length;
-  var bytes = new Uint8Array(new ArrayBuffer(crcLen + 8));
+function makeChunkBytes(type: string, dataBytes: Uint8Array): Uint8Array {
+  const crcLen = type.length + dataBytes.length;
+  const bytes = new Uint8Array(new ArrayBuffer(crcLen + 8));
   bytes.set(makeDWordArray(dataBytes.length,true), 0);
   bytes.set(makeStringArray(type), 4);
   bytes.set(dataBytes, 8);
-  var crc = crc32(bytes, 4, crcLen);
+  const crc = crc32(bytes, 4, crcLen);
   bytes.set(makeDWordArray(crc, true), crcLen + 4);
   return bytes;
 };
