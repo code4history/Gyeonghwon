@@ -1,2 +1,1 @@
-declare function _exports(url: any): import("es6-promise").Promise<any>;
-export = _exports;
+export default function (url: string): Promise<ArrayBuffer>;

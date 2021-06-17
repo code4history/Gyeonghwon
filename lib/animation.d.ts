@@ -1,13 +1,16 @@
-interface Frame {
+export interface Frame {
     disposeOp: number;
     blendOp: number;
     left: number;
     top: number;
     width: number;
     height: number;
-    iData: any;
-    img: any;
+    iData?: any;
+    img?: any;
     delay: number;
+    data?: Uint8Array;
+    gce?: Uint8Array;
+    dataParts?: Uint8Array[];
 }
 declare class GAnimation {
     #private;
@@ -24,3 +27,4 @@ declare class GAnimation {
     isPlayed(): boolean;
     isFinished(): boolean;
 }
+export default GAnimation;

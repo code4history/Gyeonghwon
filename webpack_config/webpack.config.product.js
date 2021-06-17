@@ -7,7 +7,7 @@ const common = require("./webpack.config.common.js");
 
 module.exports = merge(common, {
   output: {
-    path: path.resolve(__dirname, "../lib"),
+    path: path.resolve(__dirname, "../es5"),
     filename: '[name].js',
     libraryTarget: 'umd',
     globalObject: 'this'

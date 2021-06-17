@@ -3,6 +3,14 @@
   "version": "0.0.1",
   "author": "Kohei Otsuka",
   "description": "Library for displaying animated image files in canvas context",
+  "main": "es5/index.js",
+  "module": "lib/main.js",
+  "types": "lib/main.d.ts",
+  "sideEffects": false,
+  "files": [
+    "es5/",
+    "lib/"
+  ],
   "keywords": [
     "apng",
     "gif",

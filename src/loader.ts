@@ -1,7 +1,7 @@
 "use strict";
 
-export default function (url: string) {
-  return new Promise(function (resolve, reject) {
+export default function (url: string): Promise<ArrayBuffer> {
+  return new Promise((resolve, reject) => {
     fetch(url, {
       method: 'GET'
     }).then(res => {
