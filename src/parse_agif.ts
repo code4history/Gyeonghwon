@@ -22,20 +22,24 @@ export default function (buffer: ArrayBufferLike): Promise<any> {
   return new Promise((resolve, reject) => {
     // fast animation test
     let isAnimated = false;
+    let gceCount = 0;
     parseBlocks(bytes, (type, _bytes, _off, _length) => {
       if (type === "APP") {
         isAnimated = true;
         return false;
+      } else if (type === "GCE") {
+        gceCount++;
       }
       return true;
     });
-    if (!isAnimated) {
+    if (!isAnimated && gceCount < 2) {
       reject("Not an animated GIF");
       return;
     }
 
     const postDataParts:Uint8Array[] = [], anim = new Animation();
     let headerDataBytes:Uint8Array | undefined, frame: Partial<Frame> | undefined;
+    if (gceCount > 1) anim.numPlays = 1;
 
     parseBlocks(bytes, (type, bytes, off, length) => {
       switch (type) {
