@@ -8,6 +8,8 @@ const CopyWebpackPlugin = require("copy-webpack-plugin")
 const common = require("./webpack.config.common.js");
 
 module.exports = merge(common, {
+  mode: 'development',
+
   output: {
     path: path.resolve(__dirname, "../dev"),
     filename: '[name].js',
@@ -20,8 +22,8 @@ module.exports = merge(common, {
       patterns: [{from:'./public/assets', to:'../dev/assets'}]
     }),
     new HtmlWebpackPlugin({
-      template: "./public/index.html",
+      template: "./public/index1.html",
       scriptLoading: "blocking"
     })
-  ],
+  ]
 });

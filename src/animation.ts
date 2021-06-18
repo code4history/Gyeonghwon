@@ -1,5 +1,8 @@
 "use strict";
 
+import EventTarget from "ol/events/Target";
+import BaseEvent from "ol/events/Event";
+
 export interface Frame {
   disposeOp: number;
   blendOp: number;
@@ -15,17 +18,28 @@ export interface Frame {
   dataParts?: Uint8Array[];
 }
 
+export class AnimationEvent extends BaseEvent {
+  readonly now: number;
+  readonly tag: string;
+  constructor(now: number, tag: string) {
+    super('render');
+    this.now = now;
+    this.tag = tag;
+  }
+}
+
 /**
  * GAnimation class
  * @constructor
  */
-class GAnimation {
+class GAnimation extends EventTarget {
   // Public
   width = 0;
   height = 0;
   numPlays = 0;
   playTime = 0;
   frames: Frame[] = [];
+  tag: string;
   #nextRenderTime = 0;
   #fNum = 0;
   #prevF?: Frame;
@@ -34,7 +48,9 @@ class GAnimation {
   #contexts: any[] = [];
   readonly #tick: FrameRequestCallback;
 
-  constructor() {
+  constructor(tag = '') {
+    super();
+    this.tag = tag;
     const ani = this;
     const renderFrame = (now: number) => {
       const f = ani.#fNum++ % ani.frames.length;
@@ -64,6 +80,8 @@ class GAnimation {
         ani.#contexts.forEach(function (ctx) {ctx.clearRect(frame.left, frame.top, frame.width, frame.height);});
       }
       ani.#contexts.forEach(function (ctx) {ctx.drawImage(frame.img, frame.left, frame.top);});
+      const event = new AnimationEvent(now, this.tag);
+      ani.dispatchEvent(event);
       if (ani.#nextRenderTime === 0) ani.#nextRenderTime = now;
       while (now > ani.#nextRenderTime + ani.playTime) ani.#nextRenderTime += ani.playTime;
       ani.#nextRenderTime += frame.delay;
@@ -73,6 +91,10 @@ class GAnimation {
       while (ani.#played && ani.#nextRenderTime <= now) renderFrame(now);
       if (ani.#played) requestAnimationFrame(ani.#tick);
     };
+  }
+
+  setTag(tag: string) {
+    this.tag = tag;
   }
 
   /**
@@ -130,6 +152,16 @@ class GAnimation {
       delete ctx['_aimg_animation'];
     }
   };
+
+  removeAllContexts() {
+    this.#contexts.forEach(ctx => {
+      this.removeContext(ctx);
+    });
+  }
+
+  latestContext() {
+    return this.#contexts[this.#contexts.length - 1];
+  }
 
   //noinspection JSUnusedGlobalSymbols
   /**

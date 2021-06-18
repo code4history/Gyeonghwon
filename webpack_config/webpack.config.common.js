@@ -13,7 +13,7 @@ module.exports = {
   devtool: 'source-map',
 
   entry: {
-    "index": path.resolve(__dirname, "../src/main.ts")
+    "index": path.resolve(__dirname, "../src/index.ts")
   },
 
   resolve: {
@@ -27,6 +27,12 @@ module.exports = {
         exclude: /node_modules/,
         loader: 'babel-loader',
       },
+      {
+        test: /\.css$/,
+        use: [
+          { loader: "css-loader" }
+        ]
+      }
     ]
   },
 

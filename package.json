@@ -4,8 +4,8 @@
   "author": "Kohei Otsuka",
   "description": "Library for displaying animated image files in canvas context",
   "main": "es5/index.js",
-  "module": "lib/main.js",
-  "types": "lib/main.d.ts",
+  "module": "lib/index.js",
+  "types": "lib/index.d.ts",
   "sideEffects": false,
   "files": [
     "es5/",
@@ -24,24 +24,29 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack --config webpack_config/webpack.config.product.js",
-    "build:dev": "webpack-cli --config webpack_config/webpack.config.devserver.js --mode=development --devtool=inline-source-map",
+    "build:dev1": "webpack-cli --config webpack_config/webpack.config.devserver1.js --mode=development --devtool=inline-source-map",
+    "build:dev2": "webpack-cli --config webpack_config/webpack.config.devserver2.js --mode=development --devtool=inline-source-map",
     "build:es6": "tsc",
-    "server": "webpack-cli serve --config webpack_config/webpack.config.devserver.js --mode=development --devtool=inline-source-map"
+    "server1": "webpack-cli serve --config webpack_config/webpack.config.devserver1.js --mode=development --devtool=inline-source-map",
+    "server2": "webpack-cli serve --config webpack_config/webpack.config.devserver2.js --mode=development --devtool=inline-source-map"
   },
   "dependencies": {
-    "es6-promise": "~4.2.8"
+    "ol": "^6.5.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.5",
     "@babel/core": "^7.14.3",
     "@babel/preset-env": "^7.14.5",
     "@babel/preset-typescript": "^7.14.5",
+    "@types/ol": "^6.5.1",
     "babel-loader": "^8.2.2",
     "clean-webpack-plugin": "^4.0.0-alpha.0",
     "copy-webpack-plugin": "^9.0.0",
     "core-js": "^3.14.0",
+    "css-loader": "^5.2.6",
     "html-webpack-plugin": "^5.3.1",
     "typescript": "^4.3.2",
+    "url-loader": "^4.1.1",
     "webpack": "^5.38.1",
     "webpack-cli": "^4.7.0",
     "webpack-dev-server": "^3.11.2"

@@ -5,6 +5,7 @@
   <title>Gyeonghwon</title>
 </head>
 <body>
+<h2>ES5 sample</h2>
 <h4>APNG sample</h4>
 <img class="anim-image" src="assets/comipo24bit.png"> <img class="anim-image" src="assets/Wikipedia_construction_puzzle_3D.png">
 <h4>AGIF sample</h4>
@@ -13,7 +14,12 @@
 <img class="anim-image" src="assets/comipo.webp"> <img class="anim-image" src="assets/Wikipedia_construction_puzzle_3D.webp">
 </body>
 <script>
-  var images = document.querySelectorAll(".anim-image");
-  for (let i = 0; i < images.length; i++) Gyeonghwon.animateImage(images[i]);
+  const images = document.querySelectorAll(".anim-image");
+  const gh = new Gyeonghwon();
+  /*gh.addEventListener('need_render', (e) => {
+    console.log(e);
+    return false;
+  });*/
+  for (let i = 0; i < images.length; i++) gh.animateImage(images[i]);
 </script>
 </html>
