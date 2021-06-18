@@ -8,7 +8,7 @@ However, with the new map API using HTML canvas or WebGL, it is no longer possib
 Here is a sample of a marker in OpenLayer, which does not move .  
 https://code4history.dev/Gyeonghwon/index2.html
 
-Therefore, we developed Gyeonghwon as a platform to easily create animated markers on the new map API using Animated images.  
+Therefore, I developed Gyeonghwon as a platform to easily create animated markers on the new map API using Animated images.  
 Here is a sample of a marker that actually works.  
 https://code4history.dev/Gyeonghwon/index.html
 
