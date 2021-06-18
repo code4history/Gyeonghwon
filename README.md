@@ -1,8 +1,6 @@
 Gyeonghwon (甄萱:Animated image marker enabler for canvas-based map APIs)
 ==============
 
-Library to display Animated images in a context in canvas.
-
 With the old HTML DOM div-based map API, it was very easy to create animated markers. You simply had to create a marker using an image such as Animated GIF or APNG.  
 However, with the new map API using HTML canvas or WebGL, it is no longer possible to create animated markers by simply using animated images as markers.  
 Here is a sample of a marker in OpenLayer, which does not move .  
