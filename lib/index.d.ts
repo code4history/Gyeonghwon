@@ -5,10 +5,13 @@ declare type GyeonghwonOptions = ParseOptions & {
     waitingMilliSec?: number;
 };
 export default class Gyeonghwon extends EventTarget {
-    #private;
     waitingMilliSec: number;
     forceLoop: boolean;
     ignoreSingle: boolean;
+    private url2promise;
+    private dispatcher;
+    private waitingBuffer?;
+    private animates;
     constructor(options?: GyeonghwonOptions);
     parseBuffer(buffer: ArrayBufferLike): Promise<Animation>;
     parseURL(url: string): Promise<Animation>;

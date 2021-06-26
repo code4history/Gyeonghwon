@@ -20,13 +20,19 @@ export declare class AnimationEvent extends BaseEvent {
     constructor(now: number, tag: string);
 }
 declare class GAnimation extends EventTarget {
-    #private;
     width: number;
     height: number;
     numPlays: number;
     playTime: number;
     frames: Frame[];
     tag: string;
+    private nextRenderTime;
+    private fNum;
+    private prevF?;
+    private played;
+    private finished;
+    private contexts;
+    private readonly tick;
     constructor(tag?: string);
     setTag(tag: string): void;
     play(): void;

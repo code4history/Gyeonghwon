@@ -40,10 +40,10 @@ export default class Gyeonghwon extends EventTarget {
   waitingMilliSec: number;
   forceLoop: boolean;
   ignoreSingle: boolean;
-  #url2promise: Url2Promise;
-  #dispatcher: (event: BaseEvent) => boolean;
-  #WaitingBuffer?: WaitingBuffer;
-  #animates:Animation[] = [];
+  private url2promise: Url2Promise;
+  private dispatcher: (event: BaseEvent) => boolean;
+  private waitingBuffer?: WaitingBuffer;
+  private animates:Animation[] = [];
 
   constructor(options: GyeonghwonOptions = { ignoreSingle: false, forceLoop: false, waitingMilliSec: 10}) {
     super();
@@ -54,33 +54,33 @@ export default class Gyeonghwon extends EventTarget {
     this.waitingMilliSec = options.waitingMilliSec;
     this.forceLoop = options.forceLoop;
     this.ignoreSingle = options.ignoreSingle;
-    this.#url2promise = {};
-    this.#dispatcher = (event: BaseEvent) => {
+    this.url2promise = {};
+    this.dispatcher = (event: BaseEvent) => {
       const tag = (event as AnimationEvent).tag;
       const now = (event as AnimationEvent).now;
 
       const setupTimeout = () => {
         const timer_id = setTimeout(() => {
           self.dispatchEvent(new BaseEvent('need_render'));
-          self.#WaitingBuffer = undefined;
+          self.waitingBuffer = undefined;
         }, self.waitingMilliSec);
-        self.#WaitingBuffer = {
+        self.waitingBuffer = {
           timestamp: now,
           buffer: {},
           timer_id: ((timer_id as unknown) as number)
         };
-        self.#WaitingBuffer.buffer[tag] = true;
+        self.waitingBuffer.buffer[tag] = true;
       };
 
-      if (!self.#WaitingBuffer) {
+      if (!self.waitingBuffer) {
         setupTimeout();
       } else {
-        if (self.#WaitingBuffer.buffer[tag]) {
-          clearTimeout(self.#WaitingBuffer.timer_id);
+        if (self.waitingBuffer.buffer[tag]) {
+          clearTimeout(self.waitingBuffer.timer_id);
           self.dispatchEvent(new BaseEvent('need_render'));
           setupTimeout();
         } else {
-          self.#WaitingBuffer.buffer[tag] = true;
+          self.waitingBuffer.buffer[tag] = true;
         }
       }
 
@@ -104,10 +104,10 @@ export default class Gyeonghwon extends EventTarget {
    * @return {Promise}
    */
   async parseURL(url: string): Promise<Animation> {
-    if (!(url in this.#url2promise)) this.#url2promise[url] = loadUrl(url).then((buffer) => {
+    if (!(url in this.url2promise)) this.url2promise[url] = loadUrl(url).then((buffer) => {
       return this.parseBuffer(buffer);
     });
-    return this.#url2promise[url];
+    return this.url2promise[url];
   }
 
   /**
@@ -119,8 +119,8 @@ export default class Gyeonghwon extends EventTarget {
     const anim = await this.parseURL(url);
     if (!anim.tag) {
       anim.setTag(url);
-      anim.addEventListener('render', this.#dispatcher);
-      this.#animates.push(anim);
+      anim.addEventListener('render', this.dispatcher);
+      this.animates.push(anim);
     }
     anim.addContext(context);
     anim.play();
@@ -135,8 +135,8 @@ export default class Gyeonghwon extends EventTarget {
     const anim = await this.parseURL(url);
     if (!anim.tag) {
       anim.setTag(url);
-      anim.addEventListener('render', this.#dispatcher);
-      this.#animates.push(anim);
+      anim.addEventListener('render', this.dispatcher);
+      this.animates.push(anim);
     }
     const canvas = document.createElement("canvas");
     canvas.width = anim.width;
@@ -156,8 +156,8 @@ export default class Gyeonghwon extends EventTarget {
     try {
       if (!anim.tag) {
         anim.setTag(img.src);
-        anim.addEventListener('render', this.#dispatcher);
-        this.#animates.push(anim);
+        anim.addEventListener('render', this.dispatcher);
+        this.animates.push(anim);
       }
       img.setAttribute("data-is-aimg", "yes");
       const canvas = document.createElement("canvas");
