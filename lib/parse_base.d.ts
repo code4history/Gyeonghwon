@@ -1,4 +1,8 @@
 export declare type ParseCallback = (type: string, bytes: Uint8Array, off: number, length: number) => boolean;
+export declare type ParseOptions = {
+    ignoreSingle?: boolean;
+    forceLoop?: boolean;
+};
 export declare function readDWord(bytes: Uint8Array, off: number, isBig?: boolean): number;
 export declare function readWord(bytes: Uint8Array, off: number, isBig?: boolean): number;
 export declare function read3Bytes(bytes: Uint8Array, off: number, isBig?: boolean): number;
