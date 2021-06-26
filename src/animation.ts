@@ -176,6 +176,9 @@ class GAnimation extends EventTarget {
    * @return {boolean}
    */
   isFinished() { return this.#finished; };
+
+  // For OpenLayers Icon option
+
 }
 
 export default GAnimation;

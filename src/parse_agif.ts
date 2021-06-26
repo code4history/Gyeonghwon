@@ -7,6 +7,7 @@ import {
   byteToBitArr,
   makeWordArray,
   ParseCallback,
+  ParseOptions,
   readByte,
   readString,
   readWord,
@@ -15,9 +16,12 @@ import {
 
 /**
  * @param {ArrayBuffer} buffer
+ * @param {ParseOptions} options
  * @return {Promise}
  */
-export default function (buffer: ArrayBufferLike): Promise<any> {
+export default async function (buffer: ArrayBufferLike, options: ParseOptions = { ignoreSingle: false, forceLoop: false}): Promise<Animation> {
+  const ignoreSingle = !!(options.ignoreSingle);
+  const forceLoop = !!(options.forceLoop);
   const bytes = new Uint8Array(buffer);
   return new Promise((resolve, reject) => {
     // fast animation test
@@ -32,7 +36,7 @@ export default function (buffer: ArrayBufferLike): Promise<any> {
       }
       return true;
     });
-    if (!isAnimated && gceCount < 2) {
+    if (!isAnimated && gceCount < 2 && ignoreSingle) {
       reject("Not an animated GIF");
       return;
     }
@@ -89,10 +93,14 @@ export default function (buffer: ArrayBufferLike): Promise<any> {
 
     if (frame) anim.frames.push(frame as Frame);
 
-    if (anim.frames.length === 0) {
-      reject("Not an animated PNG");
-      return;
-    }
+    if (anim.frames.length <= 1) {
+      if (ignoreSingle) {
+        reject("Not an animated PNG");
+        return;
+      } else {
+        anim.numPlays = 1;
+      }
+    } else if (forceLoop) anim.numPlays = 0;
 
     // creating images
     let createdImages = 0;

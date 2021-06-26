@@ -8,6 +8,7 @@ import {
   make3BytesArray,
   makeDWordArray,
   ParseCallback,
+  ParseOptions,
   read3Bytes,
   readByte,
   readDWord,
@@ -17,9 +18,12 @@ import {
 
 /**
  * @param {ArrayBuffer} buffer
+ * @param {ParseOptions} options
  * @return {Promise}
  */
-export default function (buffer: ArrayBufferLike): Promise<any> {
+export default async function (buffer: ArrayBufferLike, options: ParseOptions = { ignoreSingle: false, forceLoop: false}): Promise<Animation> {
+  const ignoreSingle = !!(options.ignoreSingle);
+  const forceLoop = !!(options.forceLoop);
   const bytes = new Uint8Array(buffer);
   return new Promise((resolve, reject) => {
     // fast animation test
@@ -31,7 +35,7 @@ export default function (buffer: ArrayBufferLike): Promise<any> {
       }
       return true;
     });
-    if (!isAnimated) {
+    if (!isAnimated && ignoreSingle) {
       reject("Not an animated WebP");
       return;
     }
@@ -73,10 +77,14 @@ export default function (buffer: ArrayBufferLike): Promise<any> {
     });
     if (frame) anim.frames.push(frame);
 
-    if (anim.frames.length === 0) {
-      reject("Not an animated WebP");
-      return;
-    }
+    if (anim.frames.length <= 1) {
+      if (ignoreSingle) {
+        reject("Not an animated WebP");
+        return;
+      } else {
+        anim.numPlays = 1;
+      }
+    } else if (forceLoop) anim.numPlays = 0;
 
     // creating images
     let createdImages = 0;

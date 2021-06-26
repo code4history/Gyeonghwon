@@ -23,7 +23,8 @@
   "homepage": "https://github.com/code4history/Gyeonghwon",
   "license": "MIT",
   "scripts": {
-    "build": "webpack --config webpack_config/webpack.config.product.js",
+    "build": "npm run build:es5 && npm run build:es6",
+    "build:es5": "webpack --config webpack_config/webpack.config.product.js",
     "build:dev1": "webpack-cli --config webpack_config/webpack.config.devserver1.js --mode=development --devtool=inline-source-map",
     "build:dev2": "webpack-cli --config webpack_config/webpack.config.devserver2.js --mode=development --devtool=inline-source-map",
     "build:es6": "tsc",

@@ -11,6 +11,13 @@ import iconGif2 from './assets/Wikipedia_construction_puzzle_3D.gif';
 import iconPng2 from './assets/Wikipedia_construction_puzzle_3D.png';
 // @ts-ignore
 import iconWebp2 from './assets/Wikipedia_construction_puzzle_3D.webp';
+// @ts-ignore
+import iconGif3 from './assets/Ampoule-electrique.gif';
+// @ts-ignore
+import iconPng3 from './assets/Ampoule-electrique.png';
+// @ts-ignore
+import iconWebp3 from './assets/Ampoule-electrique.webp';
+
 import Feature from 'ol/Feature';
 import Map from 'ol/Map';
 import Point from 'ol/geom/Point';
@@ -31,7 +38,10 @@ const pois = [
   [[-120, 33], iconWebp1],
   [[0, -33], iconGif2],
   [[120, -33], iconPng2],
-  [[-120, -33], iconWebp2]
+  [[-120, -33], iconWebp2],
+  [[0, 0], iconGif3],
+  [[120, 0], iconPng3],
+  [[-120, 0], iconWebp3],
 ];
 
 async function doWork() {
@@ -111,13 +121,3 @@ async function doWork() {
 }
 
 doWork();
-
-/*import Gyeonghwon from '../src';
-
-const images = document.querySelectorAll(".anim-image");
-const gh = new Gyeonghwon();
-gh.addEventListener('need_render', (e) => {
-  console.log(e);
-  return false;
-});
-for (let i = 0; i < images.length; i++) gh.animateImage(images[i] as HTMLImageElement);*/

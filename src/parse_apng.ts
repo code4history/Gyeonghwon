@@ -7,6 +7,7 @@ import {
   makeDWordArray,
   makeStringArray,
   ParseCallback,
+  ParseOptions,
   readByte,
   readDWord,
   readString,
@@ -16,9 +17,12 @@ import {
 
 /**
  * @param {ArrayBuffer} buffer
+ * @param {ParseOptions} options
  * @return {Promise}
  */
-export default function (buffer: ArrayBufferLike) {
+export default async function (buffer: ArrayBufferLike, options: ParseOptions = { ignoreSingle: false, forceLoop: false}): Promise<Animation> {
+  const ignoreSingle = !!(options.ignoreSingle);
+  const forceLoop = !!(options.forceLoop);
   const bytes = new Uint8Array(buffer);
   return new Promise((resolve, reject) => {
     // fast animation test
@@ -30,7 +34,7 @@ export default function (buffer: ArrayBufferLike) {
       }
       return true;
     });
-    if (!isAnimated) {
+    if (!isAnimated && ignoreSingle) {
       reject("Not an animated PNG");
       return;
     }
@@ -71,6 +75,18 @@ export default function (buffer: ArrayBufferLike) {
           break;
         case "IDAT":
           if (frame) frame.dataParts!.push(bytes.subarray(off + 8, off + 8 + length));
+          else {
+            frame = {};
+            frame.width = anim.width;
+            frame.height = anim.height;
+            frame.left = 0;
+            frame.top = 0;
+            frame.delay = 100;
+            anim.playTime += frame.delay;
+            frame.disposeOp = 1;
+            frame.blendOp = 1;
+            frame.dataParts = [bytes.subarray(off + 8, off + 8 + length)];
+          }
           break;
         case "IEND":
           postDataParts.push(subBuffer(bytes, off, 12 + length));
@@ -83,10 +99,15 @@ export default function (buffer: ArrayBufferLike) {
 
     if (frame) anim.frames.push(frame as Frame);
 
-    if (anim.frames.length == 0) {
-      reject("Not an animated PNG");
-      return;
-    }
+    console.log(anim.frames.length);
+    if (anim.frames.length <= 1) {
+      if (ignoreSingle) {
+        reject("Not an animated PNG");
+        return;
+      } else {
+        anim.numPlays = 1;
+      }
+    } else if (forceLoop) anim.numPlays = 0;
 
     // creating images
     let createdImages = 0;

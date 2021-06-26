@@ -1,5 +1,10 @@
 export type ParseCallback = (type: string, bytes: Uint8Array, off: number, length:number) => boolean;
 
+export type ParseOptions = {
+  ignoreSingle?: boolean;
+  forceLoop?: boolean;
+};
+
 function endianIndex(i: number, byteNum: number, isBig = false): number {
   return isBig ? i : byteNum - 1 - i;
 }
