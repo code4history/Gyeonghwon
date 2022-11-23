@@ -10,6 +10,8 @@ Therefore, I developed Gyeonghwon as a platform to easily create animated marker
 Here is a sample of a marker that actually works.  
 https://code4history.dev/Gyeonghwon/index.html
 
+Project name is named from [견훤(Gyeon Hwon)](https://ko.wikipedia.org/wiki/%EA%B2%AC%ED%9B%A4), who was the King of Later Baekje.
+
 Now it supports Animated GIF, APNG and Animated webp.  
 The current implementation already works properly, but the API interface is a reference implementation and is subject to change based on feedback and other factors.  
 In particular, this library is not made for a specific Map API, but since the operation tests are done only with OpenLayers, changes may occur to make the interface compatible with other Map APIs.
