@@ -18,7 +18,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && cross-env BUILD_MODE=package vite build",
-    "deploy": "cp public/index.html index.html && tsc && vite build",
+    "deploy": "cp public/index.html index.html && tsc && vite build", 
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
