@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gyeonghwon Demo</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Gyeonghwon デモページ</h1>
+        <p>version 0.1.0</p>
+    </div>
+    <div class="map-container">
+        <div class="map-section">
+            <div class="map-title">OpenLayers</div>
+            <div id="ol-map" class="map"></div>
+        </div>
+        <div class="map-section">
+            <div class="map-title">MapLibre GL JS</div>
+            <div id="ml-map" class="map"></div>
+        </div>
+    </div>
+    <script type="module" src="./src/demo.ts"></script>
+</body>
+</html>

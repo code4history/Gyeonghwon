@@ -1,0 +1,61 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.header {
+    padding: 10px;
+    text-align: center;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.map-container {
+    flex: 1;
+    display: flex;
+}
+
+.map-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.map-title {
+    text-align: center;
+    padding: 5px;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 1;
+}
+
+.map {
+    flex: 1;
+}
+
+.marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    forced-color-adjust: none;
+}
+
+.marker-label {
+    margin-top: 4px;
+    padding: 2px 4px;
+    background: white;
+    border: 1px solid black;
+    border-radius: 2px;
+    font: 14px Arial;
+    forced-color-adjust: none;
+}
+
+@media (forced-colors: active) {
+    .marker-label {
+        background: Canvas;
+        border: 1px solid CanvasText;
+        color: CanvasText;
+    }
+}

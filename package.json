@@ -24,11 +24,12 @@
     }
   },
   "scripts": {
-    "dev": "vite --config vite.demo.config.ts",
-    "build": "tsc && vite build",
-    "build:demo": "vite build --config vite.demo.config.ts",
-    "test": "vitest",
-    "preview": "vite preview",
+    "dev": "vite",
+    "build": "tsc && cross-env BUILD_MODE=package vite build",
+    "deploy": "cp public/index.html index.html && tsc && vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
     "generate:fixtures": "tsx scripts/generate-fixtures.ts"
   },
   "devDependencies": {
@@ -41,6 +42,7 @@
     "typescript": "^5.7.2",
     "upng-js": "^2.1.0",
     "vite": "^5.4.11",
+    "vite-plugin-dts": "^4.4.0",
     "vitest": "^1.6.0"
   }
 }
