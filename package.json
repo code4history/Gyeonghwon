@@ -1,26 +1,18 @@
 {
   "name": "gyeonghwon",
   "version": "0.2.0",
-  "author": "Code for History",
   "description": "Library for displaying animated image files in canvas context",
-  "keywords": [
-    "apng",
-    "gif",
-    "webp",
-    "svg",
-    "animation",
-    "animated image",
-    "canvas"
-  ],
-  "homepage": "https://github.com/code4history/Gyeonghwon",
-  "license": "MIT",
   "type": "module",
-  "main": "./dist/gyeonghwon.umd.cjs",
+  "main": "./dist/gyeonghwon.cjs",
   "module": "./dist/gyeonghwon.js",
+  "browser": "./dist/gyeonghwon.umd.cjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/gyeonghwon.js",
-      "require": "./dist/gyeonghwon.umd.cjs"
+      "require": "./dist/gyeonghwon.cjs",
+      "browser": "./dist/gyeonghwon.umd.cjs",
+      "types": "./dist/index.d.ts"
     }
   },
   "scripts": {
@@ -32,9 +24,31 @@
     "coverage": "vitest run --coverage",
     "generate:fixtures": "tsx scripts/generate-fixtures.ts"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code4history/Harumi.git"
+  },
+  "keywords": [
+    "apng",
+    "gif",
+    "webp",
+    "svg",
+    "animation",
+    "animated image",
+    "canvas"
+  ],
+  "homepage": "https://github.com/code4history/Gyeonghwon#readme",
+  "license": "MIT",
+  "readme": "README.md",
+  "author": "Code for History",
+  "bugs": {
+    "url": "https://github.com/code4history/Gyeonghwon/issues"
+  },
   "devDependencies": {
     "canvas": "^2.11.2",
+    "cross-env": "^7.0.3",
     "gif-encoder": "^0.7.2",
+    "happy-dom": "^15.11.7",
     "maplibre-gl": "^3.6.2",
     "ol": "^8.2.0",
     "sharp": "^0.33.5",

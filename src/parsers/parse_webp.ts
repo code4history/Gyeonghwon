@@ -93,7 +93,7 @@ export default async function (buffer: ArrayBufferLike, options: ParseOptions = 
 
       let bb: BlobPart[] = [];
       const length = makeDWordArray(4 + headerDataBytes!.byteLength + frame.data!.byteLength);
-      const headerArray = support.WEBP_CHECK_BYTES.map((bite, i) => {
+      const headerArray = support.WEBP_CHECK_BYTES.map((_bite, i) => {
         return i > 3 && i < 8 ? length[i - 4] : support.WEBP_CHECK_BYTES[i];
       });
       bb.push(headerArray);

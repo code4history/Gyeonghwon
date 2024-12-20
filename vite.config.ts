@@ -17,25 +17,25 @@ export default defineConfig({
     ? {
         lib: {
           entry: {
-            'index': resolve(__dirname, 'src/index.ts'),
-            'ime': resolve(__dirname, 'src/ime.ts'),
+            'gyeonghwon': resolve(__dirname, 'src/index.ts'),
           },
-          formats: ['es']
+          formats: ['es','cjs','umd'],
+          name: 'gyeonghwon'
         }
       }
     : {
-        outDir: 'dist',
-        emptyOutDir: true,
-        rollupOptions: {
-          input: {
-            main: resolve(__dirname, 'index.html')
-          },
-          output: {
-            entryFileNames: 'assets/[name].[hash].js',
-            chunkFileNames: 'assets/[name].[hash].js',
-            assetFileNames: 'assets/[name].[hash][extname]'
-          }
+      outDir: 'dist',
+      emptyOutDir: true,
+      rollupOptions: {
+        input: {
+          main: resolve(__dirname, 'index.html')
+        },
+        output: {
+          entryFileNames: 'assets/[name].[hash].js',
+          chunkFileNames: 'assets/[name].[hash].js',
+          assetFileNames: 'assets/[name].[hash][extname]'
         }
+      }
       },
   plugins: [dts()],
   json: {

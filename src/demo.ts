@@ -11,7 +11,10 @@ import VectorSource from 'ol/source/Vector';
 import 'ol/ol.css';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import Gyeonghwon from '../src/lib/index';
+import Gyeonghwon from './index';
+
+// バージョン情報を表示
+document.getElementById('version')!.textContent = import.meta.env.APP_VERSION;
 
 // 皇居の座標
 const PALACE_COORDS: [number, number] = [139.7528, 35.6852];
