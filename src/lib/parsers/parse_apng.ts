@@ -1,7 +1,7 @@
 "use strict";
 
-import Animation, {Frame} from './animation';
-import { support } from './support-test';
+import Animation, {Frame} from '../utils/animation';
+import { support } from '../utils/support';
 import crc32 from './crc32';
 import {
   makeDWordArray,
@@ -99,7 +99,6 @@ export default async function (buffer: ArrayBufferLike, options: ParseOptions = 
 
     if (frame) anim.frames.push(frame as Frame);
 
-    console.log(anim.frames.length);
     if (anim.frames.length <= 1) {
       if (ignoreSingle) {
         reject("Not an animated PNG");

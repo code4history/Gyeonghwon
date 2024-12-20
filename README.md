@@ -24,3 +24,56 @@ The library requires support from the following technologies in order to run:
  * [requestAnimationFrame](http://caniuse.com/#feat=requestanimationframe)
  
 These technologies are supported in all modern browsers and IE starting with version 10.
+
+### OpenLayersでの使用方法
+
+#### 基本的な使い方
+
+1. キャンバスの準備
+
+```typescript
+const canvas = document.createElement('canvas');
+```
+
+2. アニメーションの初期化
+
+```typescript
+const gyeonghwon = new Gyeonghwon();
+const animation = await gyeonghwon.parseURL('path/to/animation.gif');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+if (ctx) {
+  canvas.width = animation.width;
+  canvas.height = animation.height;
+  animation.addContext(ctx);
+  animation.play();
+}
+```
+
+3. OpenLayersでの表示
+
+```typescript
+const feature = new Feature({
+    geometry: new Point(position)
+});
+
+feature.setStyle(new Style({
+  image: new Icon({
+    img: canvas,
+    size: [animation.width, animation.height],
+    scale: 1.0,
+    anchor: [0.5, 0.5],
+    anchorXUnits: 'fraction',
+    anchorYUnits: 'fraction'
+  })
+}));
+```
+
+4. アニメーションの更新
+
+```typescript
+function animate() {
+  feature.changed();
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+```

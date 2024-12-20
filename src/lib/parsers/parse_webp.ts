@@ -1,7 +1,7 @@
 "use strict";
 
-import Animation, {Frame} from './animation';
-import { support } from './support-test';
+import Animation, {Frame} from '../utils/animation';
+import { support } from '../utils/support';
 import {
   bitsToNum,
   byteToBitArr,

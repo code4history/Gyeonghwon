@@ -16,7 +16,7 @@ import parseWEBP from './parse_webp';
 import { ParseOptions } from './parse_base';
 import loadUrl from './loader';
 import {gifCheck, pngCheck, webpCheck} from "./support-test";
-import Animation, {AnimationEvent} from './lib/animation';
+import Animation, {AnimationEvent} from './lib/utils/animation';
 import BaseEvent from "ol/events/Event";
 import EventTarget from "ol/events/Target";
 
